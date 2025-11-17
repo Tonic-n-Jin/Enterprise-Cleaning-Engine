@@ -4,7 +4,7 @@ Provides type-safe, validated configuration loaded from YAML.
 """
 
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -81,16 +81,12 @@ class RuleConfig(BaseModel):
     version: str = Field("1.0", description="Configuration schema version")
     name: str = Field(..., description="Name of this cleaning configuration")
     description: Optional[str] = Field(None, description="Description of the cleaning process")
-    
-    input_contract: Optional[DataContract] = Field(
-        None, description="Expected input data schema"
-    )
-    output_contract: Optional[DataContract] = Field(
-        None, description="Expected output data schema"
-    )
-    
+
+    input_contract: Optional[DataContract] = Field(None, description="Expected input data schema")
+    output_contract: Optional[DataContract] = Field(None, description="Expected output data schema")
+
     rules: List[CleaningRule] = Field(..., description="List of cleaning rules to apply")
-    
+
     observability: Dict[str, Any] = Field(
         default_factory=lambda: {"enabled": True, "service_name": "cleaning-engine"},
         description="OpenTelemetry configuration",

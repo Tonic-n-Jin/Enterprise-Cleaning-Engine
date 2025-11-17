@@ -49,9 +49,7 @@ class DuckDBStorage:
                 self.connection.close()
                 self.connection = None
 
-    def save_dataframe(
-        self, df: pl.DataFrame, table_name: str, if_exists: str = "replace"
-    ) -> None:
+    def save_dataframe(self, df: pl.DataFrame, table_name: str, if_exists: str = "replace") -> None:
         """
         Save a Polars DataFrame to DuckDB.
 
@@ -74,14 +72,18 @@ class DuckDBStorage:
             elif if_exists == "fail":
                 # Check if table exists
                 result = self.connection.execute(
-                    f"SELECT COUNT(*) FROM information_schema.tables WHERE table_name = '{table_name}'"
+                    f"SELECT COUNT(*) FROM information_schema.tables "
+                    f"WHERE table_name = '{table_name}'"
                 ).fetchone()
                 if result and result[0] > 0:
                     raise ValueError(f"Table {table_name} already exists")
 
-            # Create or append to table
-            self.connection.execute(f"CREATE TABLE IF NOT EXISTS {table_name} AS SELECT * FROM arrow_table")
-            if if_exists == "append":
+            # Register arrow table and create/insert
+            if if_exists in ("replace", "fail"):
+                self.connection.execute(
+                    f"CREATE TABLE {table_name} AS SELECT * FROM arrow_table"
+                )
+            else:  # append
                 self.connection.execute(f"INSERT INTO {table_name} SELECT * FROM arrow_table")
 
     def load_dataframe(self, table_name: str, limit: Optional[int] = None) -> pl.DataFrame:

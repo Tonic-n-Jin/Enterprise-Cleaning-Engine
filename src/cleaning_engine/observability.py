@@ -2,7 +2,6 @@
 OpenTelemetry instrumentation for observability.
 """
 
-from typing import Optional
 
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource

@@ -139,12 +139,8 @@ def test_rule_config_with_contracts() -> None:
     """Test RuleConfig with data contracts."""
     config = RuleConfig(
         name="contract_config",
-        input_contract=DataContract(
-            columns={"id": {"dtype": "Int64", "nullable": False}}
-        ),
-        output_contract=DataContract(
-            columns={"id": {"dtype": "Int64", "nullable": False}}
-        ),
+        input_contract=DataContract(columns={"id": {"dtype": "Int64", "nullable": False}}),
+        output_contract=DataContract(columns={"id": {"dtype": "Int64", "nullable": False}}),
         rules=[
             CleaningRule(
                 name="rule1",
@@ -163,9 +159,7 @@ def test_rule_config_observability() -> None:
     """Test RuleConfig observability settings."""
     config = RuleConfig(
         name="obs_config",
-        rules=[
-            CleaningRule(name="rule1", operation=CleaningOperation.DROP_NULLS)
-        ],
+        rules=[CleaningRule(name="rule1", operation=CleaningOperation.DROP_NULLS)],
         observability={"enabled": True, "service_name": "custom-service"},
     )
 
@@ -177,9 +171,7 @@ def test_rule_config_default_observability() -> None:
     """Test RuleConfig default observability settings."""
     config = RuleConfig(
         name="default_obs",
-        rules=[
-            CleaningRule(name="rule1", operation=CleaningOperation.DROP_NULLS)
-        ],
+        rules=[CleaningRule(name="rule1", operation=CleaningOperation.DROP_NULLS)],
     )
 
     assert config.observability["enabled"] is True
@@ -201,6 +193,4 @@ def test_rule_config_validation() -> None:
         RuleConfig(rules=[])  # type: ignore
 
     with pytest.raises(ValidationError):
-        RuleConfig(  # type: ignore
-            name="test"
-        )  # Missing rules
+        RuleConfig(name="test")  # type: ignore  # Missing rules

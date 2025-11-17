@@ -4,7 +4,7 @@ Each operation is a pure function for testability and composability.
 """
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, List
 
 import polars as pl
 from opentelemetry import trace
@@ -84,11 +84,7 @@ def trim_whitespace(df: pl.DataFrame, columns: List[str], **params: Any) -> pl.D
             return df
 
         return df.with_columns(
-            [
-                pl.col(col).str.strip_chars()
-                for col in columns
-                if df[col].dtype == pl.Utf8
-            ]
+            [pl.col(col).str.strip_chars() for col in columns if df[col].dtype == pl.Utf8]
         )
 
 
@@ -99,11 +95,7 @@ def lowercase(df: pl.DataFrame, columns: List[str], **params: Any) -> pl.DataFra
             return df
 
         return df.with_columns(
-            [
-                pl.col(col).str.to_lowercase()
-                for col in columns
-                if df[col].dtype == pl.Utf8
-            ]
+            [pl.col(col).str.to_lowercase() for col in columns if df[col].dtype == pl.Utf8]
         )
 
 
@@ -114,11 +106,7 @@ def uppercase(df: pl.DataFrame, columns: List[str], **params: Any) -> pl.DataFra
             return df
 
         return df.with_columns(
-            [
-                pl.col(col).str.to_uppercase()
-                for col in columns
-                if df[col].dtype == pl.Utf8
-            ]
+            [pl.col(col).str.to_uppercase() for col in columns if df[col].dtype == pl.Utf8]
         )
 
 
@@ -231,9 +219,7 @@ def remove_outliers(df: pl.DataFrame, columns: List[str], **params: Any) -> pl.D
                 mean = df[col].mean()
                 std = df[col].std()
                 if std and std > 0:
-                    df = df.filter(
-                        (pl.col(col) - mean).abs() <= threshold * std
-                    )
+                    df = df.filter((pl.col(col) - mean).abs() <= threshold * std)
 
         return df
 
