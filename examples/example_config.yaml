@@ -1,0 +1,108 @@
+# Example cleaning configuration
+version: "1.0"
+name: "enterprise_data_cleaning"
+description: "Production cleaning pipeline for customer data"
+
+# Input data contract - what we expect coming in
+input_contract:
+  strict: true
+  coerce: false
+  columns:
+    customer_id:
+      dtype: Int64
+      nullable: false
+    email:
+      dtype: Utf8
+      nullable: true
+    age:
+      dtype: Int64
+      nullable: true
+    registration_date:
+      dtype: Utf8
+      nullable: true
+
+# Output data contract - what we guarantee going out
+output_contract:
+  strict: true
+  coerce: false
+  columns:
+    customer_id:
+      dtype: Int64
+      nullable: false
+    email:
+      dtype: Utf8
+      nullable: false
+    age:
+      dtype: Int64
+      nullable: false
+    registration_date:
+      dtype: Utf8
+      nullable: false
+
+# Cleaning rules executed in order
+rules:
+  - name: "trim_email_whitespace"
+    operation: "trim_whitespace"
+    columns:
+      columns: ["email"]
+    enabled: true
+    order: 0
+
+  - name: "lowercase_emails"
+    operation: "lowercase"
+    columns:
+      columns: ["email"]
+    enabled: true
+    order: 1
+
+  - name: "fill_missing_emails"
+    operation: "fill_nulls"
+    columns:
+      columns: ["email"]
+    parameters:
+      value: "no-email@example.com"
+    enabled: true
+    order: 2
+
+  - name: "fill_missing_age_with_median"
+    operation: "fill_nulls"
+    columns:
+      columns: ["age"]
+    parameters:
+      strategy: "median"
+    enabled: true
+    order: 3
+
+  - name: "remove_age_outliers"
+    operation: "remove_outliers"
+    columns:
+      columns: ["age"]
+    parameters:
+      method: "iqr"
+      threshold: 1.5
+    enabled: true
+    order: 4
+
+  - name: "fill_missing_dates"
+    operation: "fill_nulls"
+    columns:
+      columns: ["registration_date"]
+    parameters:
+      value: "1970-01-01"
+    enabled: true
+    order: 5
+
+  - name: "remove_duplicates"
+    operation: "drop_duplicates"
+    columns:
+      columns: ["customer_id"]
+    parameters:
+      maintain_order: true
+    enabled: true
+    order: 6
+
+# Observability configuration
+observability:
+  enabled: true
+  service_name: "enterprise-cleaning-engine"
+  console_export: true

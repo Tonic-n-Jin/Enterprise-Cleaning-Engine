@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "enterprise-cleaning-engine"
+version = "0.1.0"
+description = "A production-ready, DRY, 100M × 900-scale data cleaning engine"
+authors = ["Enterprise Cleaning Team"]
+readme = "README.md"
+packages = [{include = "cleaning_engine", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+polars = "^0.20.0"
+pydantic = "^2.0.0"
+pydantic-settings = "^2.0.0"
+pyyaml = "^6.0"
+pandera = {version = "^0.20.0", extras = ["polars"]}
+opentelemetry-api = "^1.21.0"
+opentelemetry-sdk = "^1.21.0"
+opentelemetry-instrumentation = "^0.42b0"
+duckdb = "^0.10.0"
+numpy = "<2.0.0"
+pyarrow = ">=12.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+pytest-cov = "^4.1.0"
+black = "^23.7.0"
+ruff = "^0.0.280"
+mypy = "^1.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --cov=src/cleaning_engine --cov-report=term-missing"
